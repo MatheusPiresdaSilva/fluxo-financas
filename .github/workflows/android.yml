@@ -52,7 +52,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: fluxo
           VERSION_CODE: ${{ github.run_number }}
-          VERSION_NAME: 1.${{ github.run_number }}
+          VERSION_NAME: 2.${{ github.run_number }}
         run: gradle assembleRelease --no-daemon --stacktrace
 
       - name: Renomear o APK
@@ -67,10 +67,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="v1.${{ github.run_number }}"
+          TAG="v2.${{ github.run_number }}"
           gh release create "$TAG" Fluxo.apk \
             --title "Fluxo $TAG" \
-            --notes "📱 Baixe o **Fluxo.apk** abaixo e abra no celular Android para instalar. Passo a passo: https://matheuspiresdasilva.github.io/fluxo-financas/baixar" \
+            --notes "🎉 Fluxo 2.0: assinaturas automáticas, parcelas, várias contas, empréstimos, stories, conquistas, PIN e mais. 📱 Baixe o **Fluxo.apk** abaixo e abra no celular Android para instalar. Passo a passo: https://matheuspiresdasilva.github.io/fluxo-financas/baixar" \
             --latest
 
       # O site vai junto com o APK, para o download ficar num link curto e direto

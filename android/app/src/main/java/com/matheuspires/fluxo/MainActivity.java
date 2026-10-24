@@ -1,7 +1,9 @@
 package com.matheuspires.fluxo;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -40,6 +42,7 @@ public class MainActivity extends Activity {
     private static final String START_URL = "https://" + HOST + "/assets/www/index.html";
     private static final int REQ_SAVE = 1;
     private static final int REQ_OPEN = 2;
+    private static final int REQ_NOTIFY = 3;
 
     private WebView web;
     private ValueCallback<Uri[]> fileCallback;
@@ -162,12 +165,20 @@ public class MainActivity extends Activity {
             if (uri != null && pendingBackup != null) {
                 try (OutputStream os = getContentResolver().openOutputStream(uri, "wt")) {
                     os.write(pendingBackup.getBytes(StandardCharsets.UTF_8));
-                    toastInApp("Backup salvo 💾");
+                    toastInApp("Arquivo salvo 💾");
                 } catch (Exception e) {
-                    toastInApp("Não foi possível salvar o backup ⚠️");
+                    toastInApp("Não foi possível salvar o arquivo ⚠️");
                 }
             }
             pendingBackup = null;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(requestCode, permissions, results);
+        if (requestCode == REQ_NOTIFY && (results.length == 0 || results[0] != PackageManager.PERMISSION_GRANTED)) {
+            toastInApp("Sem permissão de notificação o lembrete não aparece. Ative nas configurações do Android ⚙️");
         }
     }
 
@@ -195,12 +206,24 @@ public class MainActivity extends Activity {
     /** Funções nativas expostas ao JavaScript como window.AndroidBridge. */
     private class Bridge {
         @JavascriptInterface
+        public void setReminder(boolean on, int hour) {
+            runOnUiThread(() -> {
+                ReminderReceiver.ensureChannel(MainActivity.this);
+                if (on && Build.VERSION.SDK_INT >= 33
+                        && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIFY);
+                }
+                ReminderReceiver.schedule(MainActivity.this, on, hour);
+            });
+        }
+
+        @JavascriptInterface
         public void saveFile(String name, String content) {
             runOnUiThread(() -> {
                 pendingBackup = content;
                 Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("application/json");
+                intent.setType(name.endsWith(".csv") ? "text/csv" : "application/json");
                 intent.putExtra(Intent.EXTRA_TITLE, name);
                 try {
                     startActivityForResult(intent, REQ_SAVE);

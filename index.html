@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=2.0" />
 </head>
 <body>
   <div class="glow g1" aria-hidden="true"></div>
@@ -51,8 +51,12 @@
         <article class="hero">
           <div class="hero-orb"></div>
           <div class="hero-shine"></div>
-          <span class="hero-label">Saldo disponível</span>
+          <div class="hero-top">
+            <span class="hero-label" id="heroLabel">Saldo atual</span>
+            <button class="streak-chip" id="streakChip" aria-label="Conquistas">🔥 <b id="streakNum">0</b></button>
+          </div>
           <div class="hero-value money" id="heroBalance">R$ 0,00</div>
+          <div class="forecast" id="forecast" hidden></div>
           <div class="hero-row">
             <div class="hero-pill in">
               <small><span class="pill-ico"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>Entrou no mês</small>
@@ -65,14 +69,36 @@
           </div>
         </article>
 
-        <div class="quick">
-          <button class="quick-btn" data-quick="income"><span class="q-ico in"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>Receita</button>
+        <div class="quick" id="quick">
           <button class="quick-btn" data-quick="expense"><span class="q-ico out"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>Despesa</button>
+          <button class="quick-btn" data-quick="income"><span class="q-ico in"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>Receita</button>
+          <button class="quick-btn" data-quick="transfer"><span class="q-ico tr"><svg viewBox="0 0 24 24"><path d="M7 7h13l-4-4M17 17H4l4 4"/></svg></span>Transferir</button>
+          <button class="quick-btn" data-quick="sub"><span class="q-ico sub"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></span>Assinatura</button>
+          <button class="quick-btn" data-quick="inst"><span class="q-ico inst"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg></span>Parcelar</button>
           <button class="quick-btn" data-quick="goal"><span class="q-ico goal"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>Meta</button>
           <button class="quick-btn" data-quick="budget"><span class="q-ico budget"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-9-9v9z"/><path d="M15 3.5A9 9 0 0120.5 9H15z"/></svg></span>Limite</button>
+          <button class="quick-btn" data-quick="debt"><span class="q-ico debt"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0114 0M17 11h6M20 8v6"/></svg></span>Empréstimo</button>
         </div>
 
+        <button class="story-banner" id="storyBanner" hidden></button>
+
         <article class="insight" id="insight"></article>
+
+        <article class="panel flat">
+          <div class="panel-head">
+            <h2>Minhas contas</h2>
+            <button class="link" data-open="account">+ Conta</button>
+          </div>
+          <div class="acc-rail" id="accRail"></div>
+        </article>
+
+        <article class="panel" id="upcomingPanel" hidden>
+          <div class="panel-head">
+            <h2>Próximas cobranças</h2>
+            <button class="link" data-goto="plans" data-plan="fixed">Fixas</button>
+          </div>
+          <ul class="up-list" id="upcomingList"></ul>
+        </article>
 
         <article class="panel">
           <div class="panel-head">
@@ -93,7 +119,7 @@
         <article class="panel flat">
           <div class="panel-head">
             <h2>Metas</h2>
-            <button class="link" data-goto="goals">Ver todas</button>
+            <button class="link" data-goto="plans" data-plan="goals">Ver todas</button>
           </div>
           <div class="goal-rail" id="homeGoals"></div>
         </article>
@@ -113,6 +139,7 @@
           <button data-filter="expense">Saídas</button>
           <span class="seg-pill"></span>
         </div>
+        <div class="chip-rail" id="txFilters"></div>
         <div class="tx-summary" id="txSummary"></div>
         <ul class="tx-list full" id="txList"></ul>
         <p class="hint" id="swipeHint">Dica: arraste uma movimentação para a esquerda para excluir</p>
@@ -121,6 +148,12 @@
       <!-- ===== Análise ===== -->
       <section class="screen" data-screen="stats">
         <h1 class="screen-title">Análise</h1>
+        <button class="story-cta" id="storyBtn">
+          <span class="story-cta-ico">✨</span>
+          <span><strong id="storyBtnTitle">Resumo do mês</strong><small>Seu mês contado em stories</small></span>
+          <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+
         <article class="panel">
           <div class="result-row">
             <div>
@@ -135,12 +168,28 @@
         </article>
 
         <article class="panel">
+          <div class="panel-head">
+            <h2>Regra 50/30/20</h2>
+            <button class="link" id="ruleInfo">O que é?</button>
+          </div>
+          <div class="rule" id="rule"></div>
+        </article>
+
+        <article class="panel">
           <div class="panel-head"><h2>Para onde foi o dinheiro</h2></div>
           <div class="donut">
             <canvas id="catChart"></canvas>
             <div class="donut-center"><small>Total gasto</small><strong class="money" id="donutTotal">R$ 0</strong></div>
           </div>
           <ul class="cat-list" id="catList"></ul>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Calendário de gastos</h2>
+            <span class="heat-legend"><small>menos</small><i class="h1"></i><i class="h2"></i><i class="h3"></i><i class="h4"></i><small>mais</small></span>
+          </div>
+          <div class="cal" id="calendar"></div>
         </article>
 
         <article class="panel">
@@ -160,20 +209,51 @@
         </article>
       </section>
 
-      <!-- ===== Metas ===== -->
-      <section class="screen" data-screen="goals">
-        <h1 class="screen-title">Metas</h1>
-        <article class="hero small">
-          <div class="hero-orb"></div>
-          <span class="hero-label">Total guardado</span>
-          <div class="hero-value money" id="goalsTotal">R$ 0,00</div>
-          <div class="track"><span id="goalsTrack"></span></div>
-          <small class="hero-sub" id="goalsSub">—</small>
-        </article>
-        <ul class="goal-list" id="goalList"></ul>
-        <button class="add-dashed" data-open="goal">
-          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Nova meta
-        </button>
+      <!-- ===== Planos ===== -->
+      <section class="screen" data-screen="plans">
+        <h1 class="screen-title">Planos</h1>
+        <div class="seg" id="planSeg">
+          <button class="active" data-plan="goals">Metas</button>
+          <button data-plan="fixed">Fixas</button>
+          <button data-plan="debts">Empréstimos</button>
+          <span class="seg-pill"></span>
+        </div>
+
+        <div class="plan" data-plan-view="goals">
+          <article class="hero small">
+            <div class="hero-orb"></div>
+            <span class="hero-label">Total guardado</span>
+            <div class="hero-value money" id="goalsTotal">R$ 0,00</div>
+            <div class="track"><span id="goalsTrack"></span></div>
+            <small class="hero-sub" id="goalsSub">—</small>
+          </article>
+          <ul class="goal-list" id="goalList"></ul>
+          <button class="add-dashed" data-open="goal"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Nova meta</button>
+        </div>
+
+        <div class="plan" data-plan-view="fixed" hidden>
+          <article class="hero small">
+            <div class="hero-orb"></div>
+            <span class="hero-label">Gastos fixos por mês</span>
+            <div class="hero-value money" id="fixedTotal">R$ 0,00</div>
+            <small class="hero-sub" id="fixedSub">—</small>
+          </article>
+          <ul class="rec-list" id="recList"></ul>
+          <div class="panel">
+            <div class="panel-head"><h2>Adicionar rápido</h2></div>
+            <div class="popular" id="popularSubs"></div>
+          </div>
+          <button class="add-dashed" data-open="sub"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Nova assinatura ou conta fixa</button>
+        </div>
+
+        <div class="plan" data-plan-view="debts" hidden>
+          <div class="tx-summary">
+            <div class="in"><small>Me devem</small><strong class="money" id="debtOwed">R$ 0,00</strong></div>
+            <div class="out"><small>Eu devo</small><strong class="money" id="debtOwe">R$ 0,00</strong></div>
+          </div>
+          <ul class="debt-list" id="debtList"></ul>
+          <button class="add-dashed" data-open="debt"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Novo empréstimo</button>
+        </div>
       </section>
     </main>
 
@@ -191,8 +271,8 @@
       <button class="tab" data-tab="stats">
         <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Análise</span>
       </button>
-      <button class="tab" data-tab="goals">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg><span>Metas</span>
+      <button class="tab" data-tab="plans">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg><span>Planos</span>
       </button>
       <span class="tab-dot" id="tabDot"></span>
     </nav>
@@ -205,24 +285,30 @@
   <section class="sheet" id="txSheet" aria-label="Movimentação">
     <div class="grab"><span></span></div>
     <div class="sheet-head">
-      <div class="type-toggle" id="typeToggle">
+      <div class="type-toggle three" id="typeToggle">
         <button type="button" data-type="expense" class="active">Despesa</button>
         <button type="button" data-type="income">Receita</button>
+        <button type="button" data-type="transfer">Transferir</button>
         <span class="pill"></span>
       </div>
       <button class="icon-btn sm danger" id="txDelete" aria-label="Excluir" hidden><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg></button>
     </div>
     <div class="amount-display" id="amountDisplay"><span class="money-raw" id="amountText">R$ 0,00</span><i class="caret"></i></div>
+    <div class="amount-hint" id="amountHint"></div>
+    <div class="sugg-rail" id="txSugg"></div>
+    <div class="tx-note" id="txNote" hidden></div>
     <input class="desc-input" id="txDesc" type="text" placeholder="Descrição (opcional)" maxlength="60" autocomplete="off" enterkeyhint="done" />
     <div class="cat-rail" id="txCats"></div>
-    <div class="date-row" id="dateRow">
-      <button type="button" data-date="today">Hoje</button>
-      <button type="button" data-date="yesterday">Ontem</button>
-      <label class="date-pick" id="datePick">
-        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>
-        <span id="datePickLabel">Outra data</span>
-        <input type="date" id="txDate" />
-      </label>
+    <div class="transfer-row" id="transferRow" hidden>
+      <button type="button" class="acc-pick" id="trFrom"><small>De</small><strong>—</strong></button>
+      <span class="tr-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      <button type="button" class="acc-pick" id="trTo"><small>Para</small><strong>—</strong></button>
+    </div>
+    <div class="opt-row" id="optRow">
+      <button type="button" class="opt" id="optDate"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Hoje</span></button>
+      <button type="button" class="opt" id="optAcc"><span>👛 Carteira</span></button>
+      <button type="button" class="opt" id="optRepeat"><svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3"/></svg><span>Não repete</span></button>
+      <input type="date" id="txDate" class="ghost-date" tabindex="-1" aria-hidden="true" />
     </div>
     <div class="keypad" id="keypad">
       <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
@@ -232,6 +318,36 @@
       <button data-k="back" aria-label="Apagar"><svg viewBox="0 0 24 24"><path d="M21 5H9l-6 7 6 7h12a1 1 0 001-1V6a1 1 0 00-1-1zM17 9l-6 6M11 9l6 6"/></svg></button>
     </div>
     <button class="btn primary block" id="txSave">Salvar</button>
+  </section>
+
+  <!-- Assinatura / conta fixa (edição) -->
+  <section class="sheet" id="recSheet" aria-label="Assinatura">
+    <div class="grab"><span></span></div>
+    <div class="sheet-head">
+      <h3 id="recTitle">Assinatura</h3>
+      <button class="icon-btn sm danger" id="recDelete" aria-label="Cancelar assinatura"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg></button>
+    </div>
+    <form id="recForm" class="form" autocomplete="off">
+      <div class="rec-stats" id="recStats"></div>
+      <label class="field"><span>Nome</span><input type="text" id="recDesc" maxlength="60" /></label>
+      <div class="field-row">
+        <label class="field"><span>Valor</span><input type="text" inputmode="decimal" id="recAmount" /></label>
+        <label class="field"><span>Próxima cobrança</span><input type="date" id="recNext" /></label>
+      </div>
+      <div class="field"><span>Repete</span>
+        <div class="chips-row three" id="recFreq">
+          <button type="button" data-f="weekly">Semanal</button>
+          <button type="button" data-f="monthly">Mensal</button>
+          <button type="button" data-f="yearly">Anual</button>
+        </div>
+      </div>
+      <div class="cat-rail" id="recCats"></div>
+      <label class="setting boxed">
+        <span class="s-ico">⏸️</span><span class="s-text"><strong>Pausar</strong><small>Para de lançar até você reativar</small></span>
+        <input type="checkbox" class="switch" id="recPaused" />
+      </label>
+      <button type="submit" class="btn primary block">Salvar</button>
+    </form>
   </section>
 
   <!-- Meta -->
@@ -248,6 +364,8 @@
         <label class="field"><span>Quanto quer juntar</span><input type="text" inputmode="decimal" id="goalTarget" placeholder="R$ 10.000" /></label>
         <label class="field"><span>Já tenho</span><input type="text" inputmode="decimal" id="goalSaved" placeholder="R$ 0" /></label>
       </div>
+      <label class="field"><span>Até quando? (opcional)</span><input type="month" id="goalDeadline" /></label>
+      <p class="muted small" id="goalPlanHint"></p>
       <button type="submit" class="btn primary block">Salvar meta</button>
     </form>
   </section>
@@ -264,6 +382,7 @@
       <button class="icon-btn sm" id="depositEdit" aria-label="Editar meta"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg></button>
     </div>
     <div class="track big"><span id="depositTrack"></span></div>
+    <p class="muted small deposit-plan" id="depositPlan"></p>
     <form id="depositForm" class="form" autocomplete="off">
       <label class="field"><span>Valor</span><input type="text" inputmode="decimal" id="depositAmount" placeholder="R$ 0,00" /></label>
       <div class="chips-row" id="depositChips">
@@ -294,6 +413,105 @@
     </form>
   </section>
 
+  <!-- Conta -->
+  <section class="sheet" id="accountSheet" aria-label="Conta">
+    <div class="grab"><span></span></div>
+    <div class="sheet-head">
+      <h3 id="accTitle">Nova conta</h3>
+      <button class="icon-btn sm danger" id="accDelete" aria-label="Excluir conta" hidden><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg></button>
+    </div>
+    <form id="accForm" class="form" autocomplete="off">
+      <div class="acc-balance" id="accBalance" hidden></div>
+      <div class="emoji-rail" id="accEmojis"></div>
+      <label class="field"><span>Nome</span><input type="text" id="accName" placeholder="Ex.: Nubank, Carteira, Poupança" maxlength="24" /></label>
+      <label class="field"><span>Saldo inicial</span><input type="text" inputmode="decimal" id="accInitial" placeholder="R$ 0,00" /></label>
+      <div class="swatches" id="accColors"></div>
+      <button type="submit" class="btn primary block">Salvar conta</button>
+    </form>
+  </section>
+
+  <!-- Empréstimo -->
+  <section class="sheet" id="debtSheet" aria-label="Empréstimo">
+    <div class="grab"><span></span></div>
+    <div class="sheet-head">
+      <h3 id="debtTitle">Novo empréstimo</h3>
+      <button class="icon-btn sm danger" id="debtDelete" aria-label="Excluir" hidden><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg></button>
+    </div>
+    <form id="debtForm" class="form" autocomplete="off">
+      <div class="seg two" id="debtDir">
+        <button type="button" class="active" data-dir="owed">Me deve</button>
+        <button type="button" data-dir="owe">Eu devo</button>
+        <span class="seg-pill"></span>
+      </div>
+      <label class="field"><span>Pessoa</span><input type="text" id="debtPerson" placeholder="Ex.: João" maxlength="30" /></label>
+      <div class="field-row">
+        <label class="field"><span>Valor</span><input type="text" inputmode="decimal" id="debtAmount" placeholder="R$ 0,00" /></label>
+        <label class="field"><span>Combinado para</span><input type="date" id="debtDue" /></label>
+      </div>
+      <label class="field"><span>Motivo (opcional)</span><input type="text" id="debtDesc" placeholder="Ex.: Ingresso do show" maxlength="50" /></label>
+      <button type="submit" class="btn primary block">Salvar</button>
+    </form>
+  </section>
+
+  <section class="sheet" id="debtViewSheet" aria-label="Detalhes do empréstimo">
+    <div class="grab"><span></span></div>
+    <div class="deposit-head">
+      <div class="deposit-emoji" id="dvEmoji">🤝</div>
+      <div class="deposit-info">
+        <h3 id="dvName">—</h3>
+        <small class="muted" id="dvInfo">—</small>
+      </div>
+      <button class="icon-btn sm" id="dvEdit" aria-label="Editar"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg></button>
+    </div>
+    <div class="track big"><span id="dvTrack"></span></div>
+    <form id="dvForm" class="form" autocomplete="off">
+      <label class="field"><span>Valor recebido / pago agora</span><input type="text" inputmode="decimal" id="dvAmount" placeholder="R$ 0,00" /></label>
+      <label class="setting boxed">
+        <span class="s-ico">🧾</span><span class="s-text"><strong>Lançar no extrato</strong><small id="dvLaunchHint">Registra o valor na sua conta</small></span>
+        <input type="checkbox" class="switch" id="dvLaunch" checked />
+      </label>
+      <div class="btn-row">
+        <button type="button" class="btn ghost" id="dvSettle">Quitar tudo</button>
+        <button type="submit" class="btn primary">Registrar</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Categorias -->
+  <section class="sheet" id="catSheet" aria-label="Categorias">
+    <div class="grab"><span></span></div>
+    <div class="sheet-head"><h3>Categorias</h3></div>
+    <div class="form">
+      <div class="seg two" id="catType">
+        <button type="button" class="active" data-t="expense">Despesas</button>
+        <button type="button" data-t="income">Receitas</button>
+        <span class="seg-pill"></span>
+      </div>
+      <div class="cat-grid" id="catGrid"></div>
+      <div class="new-cat">
+        <h4>Criar categoria</h4>
+        <div class="field-row emoji-name">
+          <label class="field"><span>Ícone</span><input type="text" id="newCatIcon" placeholder="🐾" maxlength="4" /></label>
+          <label class="field"><span>Nome</span><input type="text" id="newCatName" placeholder="Ex.: Pets" maxlength="18" /></label>
+        </div>
+        <div class="swatches" id="newCatColors"></div>
+        <button type="button" class="btn primary block" id="newCatSave">Criar categoria</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Conquistas -->
+  <section class="sheet" id="achSheet" aria-label="Conquistas">
+    <div class="grab"><span></span></div>
+    <div class="sheet-head"><h3>Conquistas</h3></div>
+    <div class="streak-card">
+      <div class="streak-fire">🔥</div>
+      <div><strong id="achStreak">0 dias seguidos</strong><small id="achBest">Recorde: 0</small></div>
+    </div>
+    <p class="muted small ach-sub" id="achCount">—</p>
+    <div class="ach-grid" id="achGrid"></div>
+  </section>
+
   <!-- Configurações -->
   <section class="sheet" id="settingsSheet" aria-label="Configurações">
     <div class="grab"><span></span></div>
@@ -301,6 +519,15 @@
     <div class="form">
       <label class="field"><span>Seu nome</span><input type="text" id="nameInput" placeholder="Como quer ser chamado?" maxlength="24" autocomplete="off" /></label>
       <div class="settings-group">
+        <button class="setting" data-action="achievements"><span class="s-ico">🏆</span><span class="s-text"><strong>Conquistas</strong><small id="achRowHint">Veja suas medalhas</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        <button class="setting" data-action="categories"><span class="s-ico">🏷️</span><span class="s-text"><strong>Categorias</strong><small>Crie categorias do seu jeito</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        <button class="setting" data-action="accounts"><span class="s-ico">🏦</span><span class="s-text"><strong>Contas</strong><small>Carteira, bancos, poupança</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+      <div class="settings-group">
+        <div class="setting static">
+          <span class="s-ico">🎨</span><span class="s-text"><strong>Cor do app</strong></span>
+          <div class="accent-picker" id="accentPicker"></div>
+        </div>
         <label class="setting">
           <span class="s-ico">👁️</span><span class="s-text"><strong>Esconder valores</strong><small>Borra os valores na tela</small></span>
           <input type="checkbox" class="switch" id="hideToggle" />
@@ -309,19 +536,64 @@
           <span class="s-ico">📳</span><span class="s-text"><strong>Vibração</strong><small>Resposta ao tocar nos botões</small></span>
           <input type="checkbox" class="switch" id="hapticToggle" />
         </label>
+        <label class="setting">
+          <span class="s-ico">🔒</span><span class="s-text"><strong>Bloqueio com PIN</strong><small>Pede um código de 4 dígitos ao abrir</small></span>
+          <input type="checkbox" class="switch" id="pinToggle" />
+        </label>
+        <label class="setting app-only">
+          <span class="s-ico">⏰</span><span class="s-text"><strong>Lembrete diário</strong><small>Notificação para registrar seus gastos</small></span>
+          <input type="checkbox" class="switch" id="reminderToggle" />
+        </label>
+        <div class="setting static app-only" id="reminderHours" hidden>
+          <span class="s-ico">🕗</span><span class="s-text"><strong>Horário</strong></span>
+          <div class="hour-picker" id="hourPicker"></div>
+        </div>
       </div>
       <div class="settings-group">
         <button class="setting" data-action="export"><span class="s-ico">💾</span><span class="s-text"><strong>Fazer backup</strong><small>Salvar seus dados em um arquivo</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
         <label class="setting"><span class="s-ico">📂</span><span class="s-text"><strong>Restaurar backup</strong><small>Carregar dados de um arquivo</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg><input type="file" id="importFile" accept="application/json,.json" hidden /></label>
+        <button class="setting" data-action="csv"><span class="s-ico">📊</span><span class="s-text"><strong>Exportar para Excel</strong><small>Planilha com todas as movimentações</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
         <a class="setting web-only" id="apkLink" href="baixar.html"><span class="s-ico">🤖</span><span class="s-text"><strong>Baixar app Android</strong><small>Instale o Fluxo no seu celular</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></a>
       </div>
       <div class="settings-group">
+        <button class="setting" data-action="news"><span class="s-ico">🎁</span><span class="s-text"><strong>Novidades</strong><small>O que chegou na versão 2</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
         <button class="setting" data-action="demo"><span class="s-ico">✨</span><span class="s-text"><strong>Dados de exemplo</strong><small>Ver o app funcionando</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
         <button class="setting danger" data-action="reset"><span class="s-ico">🗑️</span><span class="s-text"><strong>Apagar tudo</strong><small>Começar do zero</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
       </div>
-      <p class="version muted small">Fluxo · seus dados ficam só neste aparelho</p>
+      <p class="version muted small">Fluxo 2.0 · seus dados ficam só neste aparelho</p>
     </div>
   </section>
+
+  <!-- Novidades -->
+  <section class="sheet" id="newsSheet" aria-label="Novidades">
+    <div class="grab"><span></span></div>
+    <div class="news-head">
+      <div class="news-badge">2.0</div>
+      <h3>Chegou o Fluxo 2.0 🎉</h3>
+      <p class="muted small">Muito mais do que anotar gastos:</p>
+    </div>
+    <ul class="news-list">
+      <li><span>🔁</span><div><strong>Assinaturas e contas fixas</strong><small>Netflix, aluguel, academia… lançados sozinhos todo mês</small></div></li>
+      <li><span>💳</span><div><strong>Compras parceladas</strong><small>Lance em 10x e as parcelas aparecem em cada mês</small></div></li>
+      <li><span>🏦</span><div><strong>Várias contas e transferências</strong><small>Carteira, Nubank, poupança, cada uma com seu saldo</small></div></li>
+      <li><span>🔮</span><div><strong>Previsão do saldo</strong><small>Saiba quanto vai sobrar no fim do mês</small></div></li>
+      <li><span>🤝</span><div><strong>Empréstimos</strong><small>Quem te deve e para quem você deve</small></div></li>
+      <li><span>✨</span><div><strong>Resumo do mês em stories</strong><small>Seu mês contado como um story</small></div></li>
+      <li><span>🏆</span><div><strong>Conquistas e sequência</strong><small>Ganhe medalhas mantendo o hábito</small></div></li>
+      <li><span>📅</span><div><strong>Calendário e regra 50/30/20</strong><small>Veja os dias mais caros e o equilíbrio do mês</small></div></li>
+      <li><span>🔒</span><div><strong>PIN, categorias e cores</strong><small>Deixe o app com a sua cara, e só seu</small></div></li>
+    </ul>
+    <button class="btn primary block" id="newsOk">Bora!</button>
+  </section>
+
+  <!-- Seletor rápido -->
+  <div class="picker" id="picker">
+    <div class="picker-card">
+      <h3 id="pickerTitle">Escolha</h3>
+      <div class="picker-list" id="pickerList"></div>
+      <button class="btn ghost block" id="pickerCancel">Cancelar</button>
+    </div>
+  </div>
 
   <!-- Confirmação -->
   <div class="dialog" id="dialog" role="alertdialog" aria-modal="true">
@@ -336,6 +608,30 @@
     </div>
   </div>
 
+  <!-- Stories -->
+  <div class="stories" id="stories" hidden>
+    <div class="story-bars" id="storyBars"></div>
+    <button class="story-close" id="storyClose" aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="story-stage" id="storyStage"></div>
+  </div>
+
+  <!-- Bloqueio -->
+  <div class="lock" id="lock" hidden>
+    <div class="lock-inner">
+      <img class="lock-logo" src="icon.svg" alt="" />
+      <h2 id="lockTitle">Digite seu PIN</h2>
+      <p class="muted small" id="lockSub">Para abrir o Fluxo</p>
+      <div class="pin-dots" id="pinDots"><i></i><i></i><i></i><i></i></div>
+      <div class="keypad lock-pad" id="lockPad">
+        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+        <button data-k="cancel" class="lock-link" id="lockCancel">Esqueci</button><button data-k="0">0</button>
+        <button data-k="back" aria-label="Apagar"><svg viewBox="0 0 24 24"><path d="M21 5H9l-6 7 6 7h12a1 1 0 001-1V6a1 1 0 00-1-1zM17 9l-6 6M11 9l6 6"/></svg></button>
+      </div>
+    </div>
+  </div>
+
   <!-- Boas-vindas -->
   <div class="onboard" id="onboard" hidden>
     <div class="onboard-inner">
@@ -344,6 +640,7 @@
       <p class="muted">Controle o que entra, o que sai e conquiste suas metas. Simples assim.</p>
       <ul class="onboard-feats">
         <li><span>⚡</span>Registre gastos em 2 toques</li>
+        <li><span>🔁</span>Assinaturas e parcelas lançadas sozinhas</li>
         <li><span>📊</span>Veja para onde vai seu dinheiro</li>
         <li><span>🎯</span>Guarde dinheiro para seus sonhos</li>
         <li><span>🔒</span>Tudo fica só no seu celular</li>
@@ -357,6 +654,6 @@
   <div class="toasts" id="toasts" aria-live="polite"></div>
 
   <script src="vendor/chart.umd.min.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=2.0"></script>
 </body>
 </html>
