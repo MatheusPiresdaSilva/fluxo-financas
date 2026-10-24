@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Baixar o Fluxo</title>
+  <meta name="description" content="Baixe o Fluxo, app de finanças pessoais, para Android." />
+  <meta name="theme-color" content="#040407" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <style>
+    @font-face { font-family: "Inter"; src: url("vendor/inter.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+    @font-face { font-family: "Space Grotesk"; src: url("vendor/space-grotesk.woff2") format("woff2"); font-weight: 300 700; font-display: swap; }
+    :root {
+      --bg: #040407; --surface: #0b0b11; --surface-2: #121219; --line: rgba(255,255,255,0.07);
+      --text: #f4f4f7; --muted: #8a8a9b; --violet-2: #a78bfa; --warn: #fbbf24;
+      --grad: linear-gradient(135deg, #8b5cf6 0%, #6366f1 45%, #2dd4bf 100%);
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Inter", system-ui, sans-serif; background: radial-gradient(120% 60% at 50% 0%, #1b1240 0%, var(--bg) 60%) fixed, var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    main { max-width: 480px; margin: 0 auto; padding: 40px 20px 48px; display: flex; flex-direction: column; gap: 18px; }
+    main > * { animation: rise .7s var(--ease) both; }
+    main > *:nth-child(2) { animation-delay: .06s; } main > *:nth-child(3) { animation-delay: .12s; }
+    main > *:nth-child(4) { animation-delay: .18s; } main > *:nth-child(5) { animation-delay: .24s; }
+    main > *:nth-child(6) { animation-delay: .3s; } main > *:nth-child(7) { animation-delay: .36s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+    .logo { width: 76px; height: 76px; border-radius: 24px; box-shadow: 0 20px 50px -12px rgba(139,92,246,0.9); animation: rise .7s var(--ease) both, floaty 4s 1s ease-in-out infinite; }
+    @keyframes floaty { 50% { transform: translateY(-8px); } }
+    h1 { font-family: "Space Grotesk", sans-serif; font-size: 2rem; line-height: 1.1; letter-spacing: -0.02em; }
+    .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    p { color: var(--muted); line-height: 1.55; }
+    .btn { display: flex; align-items: center; justify-content: center; gap: 10px; height: 60px; border-radius: 18px; color: #fff; font-weight: 700; font-size: 1.08rem; text-decoration: none; background: var(--grad); background-size: 200% 200%; animation: rise .7s var(--ease) both, shift 6s ease infinite; box-shadow: 0 16px 34px -12px rgba(139,92,246,0.95); transition: transform .2s; }
+    .btn:active { transform: scale(0.97); }
+    .btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    @keyframes shift { 50% { background-position: 100% 50%; } }
+    .meta { text-align: center; font-size: .8rem; color: var(--muted); margin-top: -8px; }
+    .card { padding: 18px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line); }
+    .card h2 { font-family: "Space Grotesk", sans-serif; font-size: 1.05rem; margin-bottom: 14px; }
+    ol { list-style: none; counter-reset: s; display: flex; flex-direction: column; gap: 14px; }
+    ol li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 12px; font-size: .92rem; line-height: 1.5; color: #d2d2de; }
+    ol li::before { content: counter(s); width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center; background: var(--surface-2); border: 1px solid var(--line); font-weight: 700; font-size: .85rem; color: var(--violet-2); }
+    b { color: var(--text); }
+    .q { color: var(--warn); }
+    .alert { display: none; gap: 12px; padding: 16px; border-radius: 18px; background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.3); font-size: .9rem; line-height: 1.5; color: #f5e3b3; }
+    .alert.show { display: flex; }
+    .alert span { font-size: 1.4rem; }
+    .qr { display: none; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+    .qr.show { display: flex; }
+    .qr-box { padding: 14px; border-radius: 18px; background: #fff; }
+    .qr-box img { display: block; width: 180px; height: 180px; image-rendering: pixelated; }
+    .links { display: flex; justify-content: center; gap: 18px; font-size: .86rem; }
+    .links a { color: var(--violet-2); text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <main>
+    <img class="logo" src="icon.svg" alt="" />
+    <div>
+      <h1>Baixe o <span class="grad">Fluxo</span> para Android</h1>
+      <p style="margin-top:10px">Suas finanças no bolso, funcionando até sem internet. Seus dados ficam só no seu celular.</p>
+    </div>
+
+    <div class="alert" id="inAppAlert">
+      <span>⚠️</span>
+      <div><b>Você está no navegador de outro app</b> (WhatsApp, Instagram…), que não deixa baixar arquivos. Toque nos <b>⋮</b> ou <b>…</b> no canto da tela e escolha <b>"Abrir no Chrome"</b> ou <b>"Abrir no navegador"</b>.</div>
+    </div>
+
+    <a class="btn" id="dl" href="Fluxo.apk" download="Fluxo.apk">
+      <svg viewBox="0 0 24 24"><path d="M12 3v12M6 11l6 6 6-6M5 21h14"/></svg>
+      Baixar o app (APK)
+    </a>
+    <p class="meta">Android 8 ou mais novo · cerca de 1 MB</p>
+
+    <section class="qr" id="qr">
+      <p>Está no computador? Aponte a câmera do celular para o código:</p>
+      <div class="qr-box"><img id="qrImg" alt="QR code para abrir esta página no celular" /></div>
+    </section>
+
+    <section class="card">
+      <h2>Como instalar</h2>
+      <ol>
+        <li><span>Toque em <b>Baixar o app (APK)</b>.</span></li>
+        <li><span>Se o Chrome avisar <span class="q">"Esse tipo de arquivo pode danificar o dispositivo"</span>, toque em <b>Baixar mesmo assim</b>. O aviso aparece para todo app que não vem da Play Store.</span></li>
+        <li><span>Quando terminar, toque em <b>Abrir</b> (ou abra o <b>Fluxo.apk</b> na pasta <b>Downloads</b>).</span></li>
+        <li><span>Se aparecer <span class="q">"Instalar apps desconhecidos"</span>, toque em <b>Configurações</b>, ative <b>Permitir desta fonte</b> e volte.</span></li>
+        <li><span>Toque em <b>Instalar</b>. Se o Play Protect avisar, toque em <b>Mais detalhes</b> → <b>Instalar mesmo assim</b>.</span></li>
+      </ol>
+    </section>
+
+    <div class="links">
+      <a href="./">Usar no navegador</a>
+      <a href="https://github.com/MatheusPiresdaSilva/fluxo-financas/releases/latest">Outras versões</a>
+    </div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script>
+    (function () {
+      var ua = navigator.userAgent || "";
+      // Navegadores embutidos em outros apps costumam bloquear downloads
+      if (/Instagram|FBAN|FBAV|FB_IAB|WhatsApp|Line\/|Telegram|TikTok|musical_ly|Snapchat|; wv\)/i.test(ua)) {
+        document.getElementById("inAppAlert").classList.add("show");
+      }
+      var mobile = /Android|iPhone|iPad|Mobile/i.test(ua);
+      if (!mobile && window.qrcode) {
+        try {
+          var qr = qrcode(0, "M");
+          qr.addData(location.href.split("#")[0]);
+          qr.make();
+          document.getElementById("qrImg").src = qr.createDataURL(6, 0);
+          document.getElementById("qr").classList.add("show");
+        } catch (e) { /* sem QR */ }
+      }
+      if (/iPhone|iPad/i.test(ua)) {
+        document.querySelector(".meta").textContent = "Este app é para Android. No iPhone, use a versão no navegador.";
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-name: Gerar APK Android
+name: Gerar APK Android e publicar o site
 
 on:
   push:
@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: android-apk
@@ -68,5 +70,26 @@ jobs:
           TAG="v1.${{ github.run_number }}"
           gh release create "$TAG" Fluxo.apk \
             --title "Fluxo $TAG" \
-            --notes "📱 Baixe o **Fluxo.apk** abaixo e abra no celular Android para instalar. Se o Android pedir, permita instalar apps desta fonte." \
+            --notes "📱 Baixe o **Fluxo.apk** abaixo e abra no celular Android para instalar. Passo a passo: https://matheuspiresdasilva.github.io/fluxo-financas/baixar" \
             --latest
+
+      # O site vai junto com o APK, para o download ficar num link curto e direto
+      - name: Montar o site
+        run: |
+          mkdir -p _site
+          cp -r index.html baixar.html style.css app.js icon.svg manifest.webmanifest vendor Fluxo.apk _site/
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  site:
+    needs: apk
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
