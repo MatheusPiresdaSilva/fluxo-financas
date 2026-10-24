@@ -1,28 +1,33 @@
 # 💎 Fluxo — Finanças Pessoais
 
-Um sistema simples, moderno e bonito para controlar suas finanças pessoais, direto no navegador.
+Um app de finanças pessoais simples, bonito e 100% pensado para o celular, com visual escuro.
 
-**▶️ Acesse:** https://matheuspiresdasilva.github.io/fluxo-financas/
+- **🌐 Usar no navegador:** https://matheuspiresdasilva.github.io/fluxo-financas/
+- **📱 Baixar o app Android (APK):** https://github.com/MatheusPiresdaSilva/fluxo-financas/releases/latest/download/Fluxo.apk
 
 ## ✨ Funcionalidades
 
-- **Painel do mês** — saldo total, receitas, despesas e taxa de economia, com comparação ao mês anterior
-- **Fluxo de caixa** — gráfico dos últimos 6 meses (receitas × despesas × resultado)
-- **Para onde vai o dinheiro** — gráfico de rosca com as despesas por categoria
-- **Transações** — adicione, edite e exclua (com "desfazer"), busque e filtre por tipo
-- **Metas** — crie objetivos, guarde ou retire dinheiro e comemore com confete 🎉 ao concluir
-- **Orçamentos** — defina limites mensais por categoria com alerta de cor ao se aproximar do limite
-- **Backup** — exporte e importe seus dados em JSON
-- **Responsivo** — funciona no celular, com botão flutuante e modais em estilo "bottom sheet"
+- **Início** — saldo, quanto entrou e saiu no mês, atalhos rápidos, dica inteligente sobre seus gastos, maiores gastos, últimas movimentações e metas
+- **Adicionar em 2 toques** — botão **+**, teclado numérico próprio (estilo app de banco), categorias com ícones e datas rápidas (Hoje/Ontem)
+- **Extrato** — busca, filtro por entradas/saídas, toque para editar e **arraste para a esquerda para excluir** (com "Desfazer")
+- **Análise** — resultado do mês, % guardado, gráfico de categorias (toque numa categoria para ver as movimentações) e os últimos 6 meses
+- **Limites** — defina quanto quer gastar no máximo por categoria; a barra muda de cor quando chega perto ou passa do limite
+- **Metas** — guarde ou retire dinheiro, acompanhe o progresso e comemore com confete 🎉
+- **Privacidade** — botão de olho para esconder os valores; os dados ficam **só no seu aparelho**
+- **Backup** — salve e restaure seus dados em um arquivo
 
-## 🎨 Efeitos
+Dica: na tela inicial e no extrato, deslize para os lados para trocar de mês.
 
-Fundo "aurora" animado, cartões de vidro (glassmorphism), holofote que segue o mouse, inclinação 3D nos cartões, números que contam até o valor, botões com ondinha, entradas escalonadas e confete.
+## 📱 Instalar no Android
 
-## 🔒 Privacidade
+1. Abra o link do APK acima no celular e baixe o `Fluxo.apk`
+2. Toque no arquivo baixado e permita a instalação de apps desta fonte, se o Android pedir
+3. Pronto! O Fluxo aparece na sua tela de apps e funciona **sem internet**
 
-Não há servidor nem login: **todos os dados ficam salvos apenas no `localStorage` do seu navegador**. Use o menu ⋮ → *Exportar backup* para guardar uma cópia ou levar os dados para outro dispositivo.
+As novas versões instalam por cima da anterior, sem perder seus dados.
 
-## 🛠️ Tecnologias
+## 🛠️ Como funciona
 
-HTML, CSS e JavaScript puro + [Chart.js](https://www.chartjs.org/) para os gráficos. Sem build — basta abrir o `index.html`.
+- App web em HTML, CSS e JavaScript puro, com [Chart.js](https://www.chartjs.org/) e fontes embutidas (funciona offline)
+- `android/` — app nativo leve (WebView) que carrega o Fluxo embutido, com botão voltar, vibração e backup em arquivo
+- `.github/workflows/android.yml` — a cada push na `main`, o GitHub Actions compila e assina o APK e publica em **Releases**

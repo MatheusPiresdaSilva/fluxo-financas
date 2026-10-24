@@ -2,303 +2,361 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Fluxo — Finanças Pessoais</title>
   <meta name="description" content="Gestão de finanças pessoais simples, moderna e bonita." />
-  <meta name="theme-color" content="#0b0b1a" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%237c5cff'/><stop offset='1' stop-color='%2300e0b8'/></linearGradient></defs><rect width='100' height='100' rx='28' fill='url(%23g)'/><path d='M30 62 L45 47 L56 57 L72 36' stroke='white' stroke-width='9' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#040407" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Fundo animado -->
-  <div class="aurora" aria-hidden="true">
-    <span class="blob b1"></span>
-    <span class="blob b2"></span>
-    <span class="blob b3"></span>
-    <div class="grain"></div>
-  </div>
+  <div class="glow g1" aria-hidden="true"></div>
+  <div class="glow g2" aria-hidden="true"></div>
   <canvas id="confetti" aria-hidden="true"></canvas>
 
-  <div class="app">
-    <!-- Cabeçalho -->
-    <header class="topbar reveal">
-      <div class="brand">
-        <div class="logo">
-          <svg viewBox="0 0 24 24"><path d="M5 16 L10 11 L13.5 14 L19 8" /></svg>
-        </div>
-        <div>
-          <h1>Fluxo</h1>
-          <p class="muted" id="greeting">Olá!</p>
-        </div>
-      </div>
-
-      <div class="month-nav">
-        <button class="icon-btn" id="prevMonth" aria-label="Mês anterior">
-          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg>
+  <div class="shell" id="shell">
+    <!-- Topo -->
+    <header class="appbar">
+      <button class="hello" id="helloBtn" aria-label="Configurações do perfil">
+        <span class="avatar" id="avatar">F</span>
+        <span class="hello-text">
+          <small id="greeting">Olá</small>
+          <strong id="userName">Bem-vindo</strong>
+        </span>
+      </button>
+      <div class="appbar-actions">
+        <button class="icon-btn" id="eyeBtn" aria-label="Esconder valores">
+          <svg class="eye-open" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-closed" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 5.1A9.8 9.8 0 0112 5c6.4 0 10 7 10 7a17 17 0 01-3.2 4.2M6.6 6.6A17 17 0 002 12s3.6 7 10 7a9.6 9.6 0 004.4-1.1M9.9 9.9a3 3 0 004.2 4.2"/></svg>
         </button>
-        <div class="month-label" id="monthLabel">—</div>
-        <button class="icon-btn" id="nextMonth" aria-label="Próximo mês">
-          <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" /></svg>
-        </button>
-      </div>
-
-      <div class="top-actions">
-        <button class="icon-btn" id="menuBtn" aria-label="Mais opções">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
-        </button>
-        <div class="menu" id="menu">
-          <button data-action="export">⬇️ Exportar backup (JSON)</button>
-          <label class="menu-item">⬆️ Importar backup<input type="file" id="importFile" accept="application/json" hidden /></label>
-          <button data-action="demo">✨ Carregar dados de exemplo</button>
-          <button data-action="reset" class="danger">🗑️ Apagar todos os dados</button>
-        </div>
-        <button class="btn primary ripple" id="addBtn">
-          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-          <span>Nova transação</span>
+        <button class="icon-btn" id="settingsBtn" aria-label="Configurações">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
         </button>
       </div>
     </header>
 
-    <!-- KPIs -->
-    <section class="kpis">
-      <article class="card kpi kpi-balance tilt reveal">
-        <div class="kpi-head"><span class="kpi-icon">💎</span><span>Saldo total</span></div>
-        <div class="kpi-value" id="kpiBalance">R$ 0,00</div>
-        <div class="kpi-foot" id="kpiBalanceFoot">acumulado até o fim do mês</div>
-        <div class="shine"></div>
-      </article>
-      <article class="card kpi tilt reveal">
-        <div class="kpi-head"><span class="kpi-icon up">↗</span><span>Receitas</span></div>
-        <div class="kpi-value income" id="kpiIncome">R$ 0,00</div>
-        <div class="kpi-foot" id="kpiIncomeFoot">—</div>
-      </article>
-      <article class="card kpi tilt reveal">
-        <div class="kpi-head"><span class="kpi-icon down">↘</span><span>Despesas</span></div>
-        <div class="kpi-value expense" id="kpiExpense">R$ 0,00</div>
-        <div class="kpi-foot" id="kpiExpenseFoot">—</div>
-      </article>
-      <article class="card kpi tilt reveal">
-        <div class="kpi-head"><span class="kpi-icon">🎯</span><span>Taxa de economia</span></div>
-        <div class="kpi-value" id="kpiSavings">0%</div>
-        <div class="ring-bar"><span id="savingsBar"></span></div>
-      </article>
-    </section>
+    <div class="month-switch" id="monthSwitch">
+      <button class="icon-btn sm" id="prevMonth" aria-label="Mês anterior"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="month-label" id="monthLabel" aria-label="Voltar para o mês atual">—</button>
+      <button class="icon-btn sm" id="nextMonth" aria-label="Próximo mês"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
 
-    <!-- Gráficos -->
-    <section class="grid-2">
-      <article class="card chart-card reveal">
-        <div class="card-head">
-          <div>
-            <h2>Fluxo de caixa</h2>
-            <p class="muted">Últimos 6 meses</p>
-          </div>
-          <div class="legend">
-            <span><i class="dot income"></i>Receitas</span>
-            <span><i class="dot expense"></i>Despesas</span>
-            <span><i class="dot balance"></i>Resultado</span>
-          </div>
-        </div>
-        <div class="chart-wrap"><canvas id="flowChart"></canvas></div>
-      </article>
-
-      <article class="card chart-card reveal">
-        <div class="card-head">
-          <div>
-            <h2>Para onde vai o dinheiro</h2>
-            <p class="muted">Despesas por categoria</p>
-          </div>
-        </div>
-        <div class="donut-wrap">
-          <div class="donut">
-            <canvas id="catChart"></canvas>
-            <div class="donut-center">
-              <span class="muted">Total</span>
-              <strong id="donutTotal">R$ 0</strong>
+    <main class="screens">
+      <!-- ===== Início ===== -->
+      <section class="screen active" data-screen="home">
+        <article class="hero">
+          <div class="hero-orb"></div>
+          <div class="hero-shine"></div>
+          <span class="hero-label">Saldo disponível</span>
+          <div class="hero-value money" id="heroBalance">R$ 0,00</div>
+          <div class="hero-row">
+            <div class="hero-pill in">
+              <small><span class="pill-ico"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>Entrou no mês</small>
+              <strong class="money" id="heroIncome">R$ 0</strong>
+            </div>
+            <div class="hero-pill out">
+              <small><span class="pill-ico"><svg viewBox="0 0 24 24"><path d="M17 7L7 17M15 17H7V9"/></svg></span>Saiu no mês</small>
+              <strong class="money" id="heroExpense">R$ 0</strong>
             </div>
           </div>
-          <ul class="cat-list" id="catList"></ul>
-        </div>
-      </article>
-    </section>
-
-    <!-- Transações + lateral -->
-    <section class="grid-main">
-      <article class="card reveal">
-        <div class="card-head wrap">
-          <div>
-            <h2>Transações</h2>
-            <p class="muted" id="txCount">0 lançamentos</p>
-          </div>
-          <div class="filters">
-            <div class="search">
-              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-              <input type="search" id="search" placeholder="Buscar..." />
-            </div>
-            <div class="seg" id="typeFilter">
-              <button class="active" data-filter="all">Todas</button>
-              <button data-filter="income">Receitas</button>
-              <button data-filter="expense">Despesas</button>
-            </div>
-          </div>
-        </div>
-        <ul class="tx-list" id="txList"></ul>
-        <div class="empty" id="txEmpty" hidden>
-          <div class="empty-art">🪙</div>
-          <p>Nenhuma transação por aqui.</p>
-          <button class="btn ghost ripple" data-open="tx">Adicionar a primeira</button>
-        </div>
-      </article>
-
-      <aside class="side">
-        <article class="card reveal">
-          <div class="card-head">
-            <div>
-              <h2>Metas</h2>
-              <p class="muted">Seus objetivos</p>
-            </div>
-            <button class="icon-btn small" data-open="goal" aria-label="Nova meta">
-              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-            </button>
-          </div>
-          <ul class="goal-list" id="goalList"></ul>
         </article>
 
-        <article class="card reveal">
-          <div class="card-head">
+        <div class="quick">
+          <button class="quick-btn" data-quick="income"><span class="q-ico in"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>Receita</button>
+          <button class="quick-btn" data-quick="expense"><span class="q-ico out"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></span>Despesa</button>
+          <button class="quick-btn" data-quick="goal"><span class="q-ico goal"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>Meta</button>
+          <button class="quick-btn" data-quick="budget"><span class="q-ico budget"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-9-9v9z"/><path d="M15 3.5A9 9 0 0120.5 9H15z"/></svg></span>Limite</button>
+        </div>
+
+        <article class="insight" id="insight"></article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Gastos do mês</h2>
+            <button class="link" data-goto="stats">Análise</button>
+          </div>
+          <ul class="bars" id="homeBars"></ul>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Últimas movimentações</h2>
+            <button class="link" data-goto="tx">Ver tudo</button>
+          </div>
+          <ul class="tx-list" id="homeTx"></ul>
+        </article>
+
+        <article class="panel flat">
+          <div class="panel-head">
+            <h2>Metas</h2>
+            <button class="link" data-goto="goals">Ver todas</button>
+          </div>
+          <div class="goal-rail" id="homeGoals"></div>
+        </article>
+      </section>
+
+      <!-- ===== Extrato ===== -->
+      <section class="screen" data-screen="tx">
+        <h1 class="screen-title">Extrato</h1>
+        <div class="search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input type="search" id="search" placeholder="Buscar por nome ou categoria" />
+          <button class="search-clear" id="searchClear" aria-label="Limpar busca" hidden><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <div class="seg" id="typeFilter">
+          <button class="active" data-filter="all">Tudo</button>
+          <button data-filter="income">Entradas</button>
+          <button data-filter="expense">Saídas</button>
+          <span class="seg-pill"></span>
+        </div>
+        <div class="tx-summary" id="txSummary"></div>
+        <ul class="tx-list full" id="txList"></ul>
+        <p class="hint" id="swipeHint">Dica: arraste uma movimentação para a esquerda para excluir</p>
+      </section>
+
+      <!-- ===== Análise ===== -->
+      <section class="screen" data-screen="stats">
+        <h1 class="screen-title">Análise</h1>
+        <article class="panel">
+          <div class="result-row">
             <div>
-              <h2>Orçamentos</h2>
-              <p class="muted">Limites do mês</p>
+              <small class="muted">Resultado do mês</small>
+              <div class="result-value money" id="statResult">R$ 0,00</div>
+              <small class="muted" id="statResultHint">—</small>
             </div>
-            <button class="icon-btn small" data-open="budget" aria-label="Novo orçamento">
-              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-            </button>
+            <div class="ring" id="savingsRing" style="--p:0">
+              <div class="ring-in"><strong id="savingsPct">0%</strong><small>guardado</small></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head"><h2>Para onde foi o dinheiro</h2></div>
+          <div class="donut">
+            <canvas id="catChart"></canvas>
+            <div class="donut-center"><small>Total gasto</small><strong class="money" id="donutTotal">R$ 0</strong></div>
+          </div>
+          <ul class="cat-list" id="catList"></ul>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Últimos 6 meses</h2>
+            <div class="legend"><span><i class="dot in"></i>Entradas</span><span><i class="dot out"></i>Saídas</span></div>
+          </div>
+          <div class="chart-wrap"><canvas id="flowChart"></canvas></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Limites por categoria</h2>
+            <button class="icon-btn sm" data-open="budget" aria-label="Novo limite"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
           </div>
           <ul class="budget-list" id="budgetList"></ul>
         </article>
-      </aside>
-    </section>
+      </section>
 
-    <footer class="foot muted">Seus dados ficam salvos apenas neste navegador · Feito com 💜</footer>
+      <!-- ===== Metas ===== -->
+      <section class="screen" data-screen="goals">
+        <h1 class="screen-title">Metas</h1>
+        <article class="hero small">
+          <div class="hero-orb"></div>
+          <span class="hero-label">Total guardado</span>
+          <div class="hero-value money" id="goalsTotal">R$ 0,00</div>
+          <div class="track"><span id="goalsTrack"></span></div>
+          <small class="hero-sub" id="goalsSub">—</small>
+        </article>
+        <ul class="goal-list" id="goalList"></ul>
+        <button class="add-dashed" data-open="goal">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Nova meta
+        </button>
+      </section>
+    </main>
+
+    <!-- Barra inferior -->
+    <nav class="tabbar" id="tabbar">
+      <button class="tab active" data-tab="home">
+        <svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg><span>Início</span>
+      </button>
+      <button class="tab" data-tab="tx">
+        <svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span>Extrato</span>
+      </button>
+      <button class="fab" id="fab" aria-label="Nova movimentação">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <button class="tab" data-tab="stats">
+        <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Análise</span>
+      </button>
+      <button class="tab" data-tab="goals">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg><span>Metas</span>
+      </button>
+      <span class="tab-dot" id="tabDot"></span>
+    </nav>
   </div>
 
-  <!-- Botão flutuante (mobile) -->
-  <button class="fab ripple" data-open="tx" aria-label="Nova transação">
-    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-  </button>
+  <!-- ===== Sheets ===== -->
+  <div class="backdrop" id="backdrop"></div>
 
-  <!-- Modal: transação -->
-  <div class="modal" id="txModal" role="dialog" aria-modal="true" aria-labelledby="txTitle">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h3 id="txTitle">Nova transação</h3>
-        <button class="icon-btn small" data-close aria-label="Fechar">
-          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
-        </button>
+  <!-- Nova movimentação -->
+  <section class="sheet" id="txSheet" aria-label="Movimentação">
+    <div class="grab"><span></span></div>
+    <div class="sheet-head">
+      <div class="type-toggle" id="typeToggle">
+        <button type="button" data-type="expense" class="active">Despesa</button>
+        <button type="button" data-type="income">Receita</button>
+        <span class="pill"></span>
       </div>
-      <form id="txForm" autocomplete="off">
-        <div class="type-toggle" id="typeToggle">
-          <button type="button" data-type="expense" class="active">Despesa</button>
-          <button type="button" data-type="income">Receita</button>
-          <span class="pill"></span>
-        </div>
-        <label class="field amount-field">
-          <span>Valor</span>
-          <div class="amount-input"><em>R$</em><input type="text" inputmode="decimal" id="txAmount" placeholder="0,00" required /></div>
+      <button class="icon-btn sm danger" id="txDelete" aria-label="Excluir" hidden><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg></button>
+    </div>
+    <div class="amount-display" id="amountDisplay"><span class="money-raw" id="amountText">R$ 0,00</span><i class="caret"></i></div>
+    <input class="desc-input" id="txDesc" type="text" placeholder="Descrição (opcional)" maxlength="60" autocomplete="off" enterkeyhint="done" />
+    <div class="cat-rail" id="txCats"></div>
+    <div class="date-row" id="dateRow">
+      <button type="button" data-date="today">Hoje</button>
+      <button type="button" data-date="yesterday">Ontem</button>
+      <label class="date-pick" id="datePick">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>
+        <span id="datePickLabel">Outra data</span>
+        <input type="date" id="txDate" />
+      </label>
+    </div>
+    <div class="keypad" id="keypad">
+      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+      <button data-k="00">00</button><button data-k="0">0</button>
+      <button data-k="back" aria-label="Apagar"><svg viewBox="0 0 24 24"><path d="M21 5H9l-6 7 6 7h12a1 1 0 001-1V6a1 1 0 00-1-1zM17 9l-6 6M11 9l6 6"/></svg></button>
+    </div>
+    <button class="btn primary block" id="txSave">Salvar</button>
+  </section>
+
+  <!-- Meta -->
+  <section class="sheet" id="goalSheet" aria-label="Meta">
+    <div class="grab"><span></span></div>
+    <div class="sheet-head">
+      <h3 id="goalTitle">Nova meta</h3>
+      <button class="icon-btn sm danger" id="goalDelete" aria-label="Excluir meta" hidden><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg></button>
+    </div>
+    <form id="goalForm" class="form" autocomplete="off">
+      <div class="emoji-rail" id="emojiRail"></div>
+      <label class="field"><span>Nome da meta</span><input type="text" id="goalName" placeholder="Ex.: Viagem para o Japão" maxlength="40" /></label>
+      <div class="field-row">
+        <label class="field"><span>Quanto quer juntar</span><input type="text" inputmode="decimal" id="goalTarget" placeholder="R$ 10.000" /></label>
+        <label class="field"><span>Já tenho</span><input type="text" inputmode="decimal" id="goalSaved" placeholder="R$ 0" /></label>
+      </div>
+      <button type="submit" class="btn primary block">Salvar meta</button>
+    </form>
+  </section>
+
+  <!-- Guardar / retirar -->
+  <section class="sheet" id="depositSheet" aria-label="Guardar dinheiro">
+    <div class="grab"><span></span></div>
+    <div class="deposit-head">
+      <div class="deposit-emoji" id="depositEmoji">🎯</div>
+      <div class="deposit-info">
+        <h3 id="depositName">Meta</h3>
+        <small class="muted" id="depositInfo">—</small>
+      </div>
+      <button class="icon-btn sm" id="depositEdit" aria-label="Editar meta"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg></button>
+    </div>
+    <div class="track big"><span id="depositTrack"></span></div>
+    <form id="depositForm" class="form" autocomplete="off">
+      <label class="field"><span>Valor</span><input type="text" inputmode="decimal" id="depositAmount" placeholder="R$ 0,00" /></label>
+      <div class="chips-row" id="depositChips">
+        <button type="button" data-v="50">+ 50</button>
+        <button type="button" data-v="100">+ 100</button>
+        <button type="button" data-v="500">+ 500</button>
+        <button type="button" data-v="1000">+ 1.000</button>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn ghost" id="withdrawBtn">Retirar</button>
+        <button type="submit" class="btn primary">Guardar</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Limite -->
+  <section class="sheet" id="budgetSheet" aria-label="Limite por categoria">
+    <div class="grab"><span></span></div>
+    <div class="sheet-head">
+      <h3>Limite mensal</h3>
+      <button class="icon-btn sm danger" id="budgetDelete" aria-label="Remover limite" hidden><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3"/></svg></button>
+    </div>
+    <form id="budgetForm" class="form" autocomplete="off">
+      <p class="muted small">Escolha a categoria e quanto você quer gastar no máximo por mês.</p>
+      <div class="cat-rail" id="budgetCats"></div>
+      <label class="field"><span>Limite por mês</span><input type="text" inputmode="decimal" id="budgetLimit" placeholder="R$ 800" /></label>
+      <button type="submit" class="btn primary block">Salvar limite</button>
+    </form>
+  </section>
+
+  <!-- Configurações -->
+  <section class="sheet" id="settingsSheet" aria-label="Configurações">
+    <div class="grab"><span></span></div>
+    <div class="sheet-head"><h3>Configurações</h3></div>
+    <div class="form">
+      <label class="field"><span>Seu nome</span><input type="text" id="nameInput" placeholder="Como quer ser chamado?" maxlength="24" autocomplete="off" /></label>
+      <div class="settings-group">
+        <label class="setting">
+          <span class="s-ico">👁️</span><span class="s-text"><strong>Esconder valores</strong><small>Borra os valores na tela</small></span>
+          <input type="checkbox" class="switch" id="hideToggle" />
         </label>
-        <label class="field">
-          <span>Descrição</span>
-          <input type="text" id="txDesc" placeholder="Ex.: Mercado do mês" maxlength="60" required />
+        <label class="setting">
+          <span class="s-ico">📳</span><span class="s-text"><strong>Vibração</strong><small>Resposta ao tocar nos botões</small></span>
+          <input type="checkbox" class="switch" id="hapticToggle" />
         </label>
-        <div class="field">
-          <span>Categoria</span>
-          <div class="chips" id="txCats"></div>
-        </div>
-        <label class="field">
-          <span>Data</span>
-          <input type="date" id="txDate" required />
-        </label>
-        <div class="modal-actions">
-          <button type="button" class="btn danger-ghost" id="txDelete" hidden>Excluir</button>
-          <button type="submit" class="btn primary ripple">Salvar</button>
-        </div>
-      </form>
+      </div>
+      <div class="settings-group">
+        <button class="setting" data-action="export"><span class="s-ico">💾</span><span class="s-text"><strong>Fazer backup</strong><small>Salvar seus dados em um arquivo</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        <label class="setting"><span class="s-ico">📂</span><span class="s-text"><strong>Restaurar backup</strong><small>Carregar dados de um arquivo</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg><input type="file" id="importFile" accept="application/json,.json" hidden /></label>
+        <a class="setting web-only" id="apkLink" href="https://github.com/MatheusPiresdaSilva/fluxo-financas/releases/latest/download/Fluxo.apk"><span class="s-ico">🤖</span><span class="s-text"><strong>Baixar app Android</strong><small>Instale o Fluxo no seu celular</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></a>
+      </div>
+      <div class="settings-group">
+        <button class="setting" data-action="demo"><span class="s-ico">✨</span><span class="s-text"><strong>Dados de exemplo</strong><small>Ver o app funcionando</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        <button class="setting danger" data-action="reset"><span class="s-ico">🗑️</span><span class="s-text"><strong>Apagar tudo</strong><small>Começar do zero</small></span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+      <p class="version muted small">Fluxo · seus dados ficam só neste aparelho</p>
+    </div>
+  </section>
+
+  <!-- Confirmação -->
+  <div class="dialog" id="dialog" role="alertdialog" aria-modal="true">
+    <div class="dialog-card">
+      <div class="dialog-ico" id="dialogIco">⚠️</div>
+      <h3 id="dialogTitle">Tem certeza?</h3>
+      <p class="muted" id="dialogText"></p>
+      <div class="btn-row">
+        <button class="btn ghost" id="dialogNo">Cancelar</button>
+        <button class="btn primary" id="dialogYes">Confirmar</button>
+      </div>
     </div>
   </div>
 
-  <!-- Modal: meta -->
-  <div class="modal" id="goalModal" role="dialog" aria-modal="true" aria-labelledby="goalTitle">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h3 id="goalTitle">Nova meta</h3>
-        <button class="icon-btn small" data-close aria-label="Fechar">
-          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
-        </button>
-      </div>
-      <form id="goalForm" autocomplete="off">
-        <label class="field"><span>Nome</span><input type="text" id="goalName" placeholder="Ex.: Viagem para o Japão" maxlength="40" required /></label>
-        <label class="field"><span>Ícone</span><input type="text" id="goalEmoji" placeholder="✈️" maxlength="4" /></label>
-        <label class="field"><span>Valor alvo (R$)</span><input type="text" inputmode="decimal" id="goalTarget" placeholder="10.000,00" required /></label>
-        <label class="field"><span>Já guardado (R$)</span><input type="text" inputmode="decimal" id="goalSaved" placeholder="0,00" /></label>
-        <div class="modal-actions">
-          <button type="button" class="btn danger-ghost" id="goalDelete" hidden>Excluir</button>
-          <button type="submit" class="btn primary ripple">Salvar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Modal: depósito em meta -->
-  <div class="modal" id="depositModal" role="dialog" aria-modal="true" aria-labelledby="depositTitle">
-    <div class="modal-card small">
-      <div class="modal-head">
-        <h3 id="depositTitle">Guardar dinheiro</h3>
-        <button class="icon-btn small" data-close aria-label="Fechar">
-          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
-        </button>
-      </div>
-      <form id="depositForm" autocomplete="off">
-        <p class="muted" id="depositInfo"></p>
-        <label class="field amount-field">
-          <span>Valor</span>
-          <div class="amount-input"><em>R$</em><input type="text" inputmode="decimal" id="depositAmount" placeholder="0,00" required /></div>
-        </label>
-        <div class="modal-actions">
-          <button type="button" class="btn ghost" id="withdrawBtn">Retirar</button>
-          <button type="submit" class="btn primary ripple">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Modal: orçamento -->
-  <div class="modal" id="budgetModal" role="dialog" aria-modal="true" aria-labelledby="budgetTitle">
-    <div class="modal-card small">
-      <div class="modal-head">
-        <h3 id="budgetTitle">Orçamento por categoria</h3>
-        <button class="icon-btn small" data-close aria-label="Fechar">
-          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
-        </button>
-      </div>
-      <form id="budgetForm" autocomplete="off">
-        <div class="field">
-          <span>Categoria</span>
-          <div class="chips" id="budgetCats"></div>
-        </div>
-        <label class="field"><span>Limite mensal (R$)</span><input type="text" inputmode="decimal" id="budgetLimit" placeholder="800,00" required /></label>
-        <div class="modal-actions">
-          <button type="button" class="btn danger-ghost" id="budgetDelete" hidden>Remover</button>
-          <button type="submit" class="btn primary ripple">Salvar</button>
-        </div>
-      </form>
+  <!-- Boas-vindas -->
+  <div class="onboard" id="onboard" hidden>
+    <div class="onboard-inner">
+      <div class="onboard-logo"><img src="icon.svg" alt="" /></div>
+      <h1>Bem-vindo ao <span class="grad">Fluxo</span></h1>
+      <p class="muted">Controle o que entra, o que sai e conquiste suas metas. Simples assim.</p>
+      <ul class="onboard-feats">
+        <li><span>⚡</span>Registre gastos em 2 toques</li>
+        <li><span>📊</span>Veja para onde vai seu dinheiro</li>
+        <li><span>🎯</span>Guarde dinheiro para seus sonhos</li>
+        <li><span>🔒</span>Tudo fica só no seu celular</li>
+      </ul>
+      <label class="field"><span>Como podemos te chamar?</span><input type="text" id="onboardName" placeholder="Seu nome" maxlength="24" autocomplete="off" /></label>
+      <button class="btn primary block" id="startEmpty">Começar</button>
+      <button class="btn ghost block" id="startDemo">Explorar com dados de exemplo</button>
     </div>
   </div>
 
   <div class="toasts" id="toasts" aria-live="polite"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="vendor/chart.umd.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,0 +1,14 @@
+{
+  "name": "Fluxo — Finanças Pessoais",
+  "short_name": "Fluxo",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#040407",
+  "theme_color": "#040407",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
